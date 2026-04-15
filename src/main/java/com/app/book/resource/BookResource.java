@@ -1,5 +1,7 @@
 package com.app.book.resource;
 
+import java.util.Objects;
+
 import com.app.book.model.Book;
 import com.app.book.repository.BookRepository;
 
@@ -25,12 +27,12 @@ public class BookResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response searchBooks(@QueryParam("author") String author, @QueryParam("title") String title) {
+    public Response searchBooks(@QueryParam("title") String title, @QueryParam("author") String author) {
     	record SearchCriteria(String author, String title) {}
         var criteria = new SearchCriteria(author, title);
         var books = switch (criteria) {
-            case SearchCriteria c when c.author() != null -> repository.findByAuthor(c.author());
-            case SearchCriteria c when c.title() != null  -> repository.findByTitle(c.title());
+        	case SearchCriteria c when Objects.nonNull(criteria.title()) -> repository.findByTitle(c.title());
+            case SearchCriteria c when Objects.nonNull(criteria.author()) -> repository.findByAuthor(c.author());
             default -> repository.findAll();
         };
     	log.info("Fetched {} books for search criteria.", books.size());
@@ -52,8 +54,8 @@ public class BookResource {
     }
 
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     @Transactional
     public Response create(Book book) {
         var savedBook = repository.insert(book);
@@ -63,26 +65,25 @@ public class BookResource {
 
     @PUT
     @Path("/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     @Transactional
     public Response update(@PathParam("id") long id, Book book) {
         return repository.findById(id)
             .map(_ -> {
-            		book.setId(id);
-            		repository.merge(book);
-                log.info("The book '{}' updated.", book.getTitle());
-                return Response.ok(book).build();
+            		var updatedBook = Book.builder().id(id).title(book.getTitle()).author(book.getAuthor()).build();
+            		repository.merge(updatedBook);
+                log.info("The book '{}' updated.", updatedBook.getTitle());
+                return Response.ok(updatedBook).build();
             })
             .orElseGet(() -> Response.status(Response.Status.NOT_FOUND)
-                    .entity(bookNotFound(book.getId())).build()
+                    .entity(bookNotFound(id)).build()
             );
     }
 
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     public Response delete(@PathParam("id") long id) {
         return repository.findById(id)
