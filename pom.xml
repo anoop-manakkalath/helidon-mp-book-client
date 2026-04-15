@@ -1,16 +1,17 @@
-<project xmlns="http://maven.apache.org/POM/4.1.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.1.0 https://maven.apache.org/xsd/maven-4.1.0.xsd">
-	<modelVersion>4.1.0</modelVersion>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.example</groupId>
 	<artifactId>helidon-mp-book-client</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 
 	<properties>
 		<maven.compiler.release>25</maven.compiler.release>
 		<helidon.version>4.4.0</helidon.version>
 		<lombok.version>1.18.44</lombok.version>
+		<io.helidon.logging.provider>log4j</io.helidon.logging.provider>
 	</properties>
 
 	<dependencies>
