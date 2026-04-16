@@ -1,6 +1,6 @@
 package com.app.book.repository;
 
-import com.app.book.model.Book;
+import com.app.book.model.BookEntity;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -18,34 +18,34 @@ public class BookRepository {
         this.em = em;
     }
 
-    public List<Book> findAll() {
-        return em.createNamedQuery("Book.findAll", Book.class).getResultList();
+    public List<BookEntity> findAll() {
+        return em.createNamedQuery("Book.findAll", BookEntity.class).getResultList();
     }
 
-    public Optional<Book> findById(long id) {
-        return Optional.ofNullable(em.find(Book.class, id));
+    public Optional<BookEntity> findById(long id) {
+        return Optional.ofNullable(em.find(BookEntity.class, id));
     }
 
-    public List<Book> findByTitle(String title) {
-        return em.createNamedQuery("Book.findByTitle", Book.class)
+    public List<BookEntity> findByTitle(String title) {
+        return em.createNamedQuery("Book.findByTitle", BookEntity.class)
                 .setParameter("title", title).getResultList();
     }
 
-    public List<Book> findByAuthor(String author) {
-        return em.createNamedQuery("Book.findByAuthor", Book.class)
+    public List<BookEntity> findByAuthor(String author) {
+        return em.createNamedQuery("Book.findByAuthor", BookEntity.class)
                 .setParameter("author", author).getResultList();
     }
 
-    public Book insert(Book book) {
+    public BookEntity insert(BookEntity book) {
         em.persist(book);
         return book;
     }
     
-    public Book merge(Book book) {
+    public BookEntity merge(BookEntity book) {
         return em.merge(book);
     }
 
-    public void delete(Book book) {
+    public void delete(BookEntity book) {
         em.remove(book);
     }
 }

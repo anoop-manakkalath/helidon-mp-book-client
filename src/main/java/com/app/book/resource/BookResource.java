@@ -2,7 +2,9 @@ package com.app.book.resource;
 
 import java.util.Objects;
 
-import com.app.book.model.Book;
+import com.app.book.dto.Book;
+import com.app.book.mapper.BookMapper;
+import com.app.book.model.BookEntity;
 import com.app.book.repository.BookRepository;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -19,10 +21,12 @@ import lombok.extern.slf4j.Slf4j;
 public class BookResource {
 
     private final BookRepository repository;
+    private final BookMapper mapper;
 
     @Inject
-    public BookResource(BookRepository repository) {
+    public BookResource(BookRepository repository, BookMapper mapper) {
         this.repository = repository;
+        this.mapper = mapper;
     }
 
     @GET
@@ -58,7 +62,8 @@ public class BookResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
     public Response create(Book book) {
-        var savedBook = repository.insert(book);
+    	var BookEntity = mapper.toEntity(book);
+        var savedBook = repository.insert(BookEntity);
         log.info("The book '{}' saved.", savedBook.getTitle());
         return Response.status(Response.Status.CREATED).entity(savedBook).build();
     }
@@ -71,7 +76,7 @@ public class BookResource {
     public Response update(@PathParam("id") long id, Book book) {
         return repository.findById(id)
             .map(_ -> {
-            		var updatedBook = Book.builder().id(id).title(book.getTitle()).author(book.getAuthor()).build();
+            		var updatedBook = BookEntity.builder().id(id).title(book.getTitle()).author(book.getAuthor()).build();
             		repository.merge(updatedBook);
                 log.info("The book '{}' updated.", updatedBook.getTitle());
                 return Response.ok(updatedBook).build();
