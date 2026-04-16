@@ -34,11 +34,12 @@ public class BookResource {
     public Response searchBooks(@QueryParam("title") String title, @QueryParam("author") String author) {
     	record SearchCriteria(String author, String title) {}
         var criteria = new SearchCriteria(author, title);
-        var books = switch (criteria) {
+        var bookEntities = switch (criteria) {
         	case SearchCriteria c when Objects.nonNull(criteria.title()) -> repository.findByTitle(c.title());
             case SearchCriteria c when Objects.nonNull(criteria.author()) -> repository.findByAuthor(c.author());
             default -> repository.findAll();
         };
+        var books = bookEntities.stream().map(mapper::toDto).toList();
     	log.info("Fetched {} books for search criteria.", books.size());
     	return Response.ok(books).build();
     }
@@ -48,6 +49,7 @@ public class BookResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getById(@PathParam("id") long id) {
     	return repository.findById(id)
+                .map(mapper::toDto)
                 .map(book -> {
                 		log.info("The book with id '{}' fetched.", id);
                     return Response.ok(book).build();
@@ -62,8 +64,9 @@ public class BookResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
     public Response create(Book book) {
-    	var BookEntity = mapper.toEntity(book);
-        var savedBook = repository.insert(BookEntity);
+    	var bookEntity = mapper.toEntity(book);
+        var savedBookEntity = repository.insert(bookEntity);
+        var savedBook = mapper.toDto(savedBookEntity);
         log.info("The book '{}' saved.", savedBook.getTitle());
         return Response.status(Response.Status.CREATED).entity(savedBook).build();
     }
@@ -76,8 +79,9 @@ public class BookResource {
     public Response update(@PathParam("id") long id, Book book) {
         return repository.findById(id)
             .map(_ -> {
-            		var updatedBook = BookEntity.builder().id(id).title(book.getTitle()).author(book.getAuthor()).build();
-            		repository.merge(updatedBook);
+            		var updatedBookEntity = BookEntity.builder().id(id).title(book.getTitle()).author(book.getAuthor()).build();
+            		repository.merge(updatedBookEntity);
+            		var updatedBook = mapper.toDto(updatedBookEntity);
                 log.info("The book '{}' updated.", updatedBook.getTitle());
                 return Response.ok(updatedBook).build();
             })

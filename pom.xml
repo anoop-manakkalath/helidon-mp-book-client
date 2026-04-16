@@ -5,7 +5,7 @@
 
 	<groupId>com.example</groupId>
 	<artifactId>helidon-mp-book-client</artifactId>
-	<version>1.1.0</version>
+	<version>1.2.0</version>
 
 	<properties>
 		<maven.compiler.release>25</maven.compiler.release>
@@ -28,7 +28,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.helidon.logging</groupId>
-			<artifactId>helidon-logging-slf4j</artifactId>
+			<artifactId>helidon-logging-log4j</artifactId>
 			<version>${helidon.version}</version>
 		</dependency>
 		<dependency>
