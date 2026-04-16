@@ -5,12 +5,13 @@
 
 	<groupId>com.example</groupId>
 	<artifactId>helidon-mp-book-client</artifactId>
-	<version>1.0.1</version>
+	<version>1.1.0</version>
 
 	<properties>
 		<maven.compiler.release>25</maven.compiler.release>
 		<helidon.version>4.4.0</helidon.version>
 		<lombok.version>1.18.44</lombok.version>
+		<mapstruct.version>1.6.3</mapstruct.version>
 		<io.helidon.logging.provider>log4j</io.helidon.logging.provider>
 	</properties>
 
@@ -74,6 +75,20 @@
 			<version>${lombok.version}</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<!-- MapStruct -->
+		<dependency>
+		    <groupId>org.mapstruct</groupId>
+		    <artifactId>mapstruct</artifactId>
+		    <version>${mapstruct.version}</version>
+		    <scope>compile</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.projectlombok</groupId>
+		    <artifactId>lombok-mapstruct-binding</artifactId>
+		    <version>0.2.0</version>
+		    <scope>provided</scope>
+		</dependency>
 
 		<!-- Logging -->
 		<dependency>
@@ -110,6 +125,11 @@
 							<artifactId>lombok</artifactId>
 							<version>${lombok.version}</version>
 						</path>
+						<path>
+			                <groupId>org.mapstruct</groupId>
+			                <artifactId>mapstruct-processor</artifactId>
+			                <version>${mapstruct.version}</version>
+			            </path>
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>

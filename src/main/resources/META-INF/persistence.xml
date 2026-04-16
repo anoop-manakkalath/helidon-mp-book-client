@@ -5,7 +5,7 @@
     <persistence-unit name="booksPU" transaction-type="JTA">
         <description>A persistence unit for the book project.</description>
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <class>com.app.book.model.Book</class>
+        <class>com.app.book.model.BookEntity</class>
         <properties>
             <property name="hibernate.hbm2ddl.auto" value="update"/>
             <property name="jakarta.persistence.transactionType" value="JTA"/>

@@ -1,0 +1,84 @@
+[project]
+modelVersion = "4.0.0"
+groupId = "com.example"
+artifactId = "helidon-mp-book-client"
+version = "1.0.0"
+
+[project.properties]
+"maven.compiler.release" = "25"
+"helidon.version" = "4.4.0"
+"lombok.version" = "1.18.44"
+"io.helidon.logging.provider" = "log4j"
+
+[[project.dependencyManagement.dependencies]]
+groupId = "io.helidon"
+artifactId = "helidon-dependencies"
+version = "${helidon.version}"
+type = "pom"
+scope = "import"
+
+[[project.dependencies]]
+groupId = "io.helidon.microprofile.bundles"
+artifactId = "helidon-microprofile"
+
+[[project.dependencies]]
+groupId = "io.helidon.integrations.cdi"
+artifactId = "helidon-integrations-cdi-jta"
+
+[[project.dependencies]]
+groupId = "io.helidon.logging"
+artifactId = "helidon-logging-log4j"
+
+[[project.dependencies]]
+groupId = "org.hibernate.orm"
+artifactId = "hibernate-core"
+
+[[project.dependencies]]
+groupId = "com.h2database"
+artifactId = "h2"
+scope = "runtime"
+
+[[project.dependencies]]
+groupId = "org.projectlombok"
+artifactId = "lombok"
+version = "${lombok.version}"
+
+[[project.dependencies]]
+groupId = "org.apache.logging.log4j"
+artifactId = "log4j-slf4j2-impl"
+
+[[project.dependencies]]
+groupId = "org.apache.logging.log4j"
+artifactId = "log4j-core"
+
+[[project.dependencies]]
+groupId = "org.apache.logging.log4j"
+artifactId = "log4j-jcl"
+
+[[project.dependencies]]
+groupId = "org.junit.jupiter"
+artifactId = "junit-jupiter"
+scope = "test"
+
+[[project.build.plugins]]
+groupId = "io.helidon.build-tools"
+artifactId = "helidon-maven-plugin"
+version = "4.0.0"
+extensions = true
+
+[[project.build.plugins]]
+artifactId = "maven-antrun-plugin"
+version = "3.2.0"
+
+  [[project.build.plugins.executions]]
+  id = "copy-db-folder"
+  phase = "process-resources"
+  goals = ["run"]
+  [project.build.plugins.executions.configuration.target]
+  copy = { todir = "${project.build.directory}/db", overwrite = true, fileset = { dir = "${project.basedir}/db" } }
+
+[[project.profiles]]
+id = "dev"
+[project.profiles.activation.property]
+name = "mp.config.profile"
+value = "dev"
