@@ -2,83 +2,149 @@
 modelVersion = "4.0.0"
 groupId = "com.example"
 artifactId = "helidon-mp-book-client"
-version = "1.0.0"
+version = "1.2.0"
 
-[project.properties]
+[properties]
 "maven.compiler.release" = "25"
 "helidon.version" = "4.4.0"
 "lombok.version" = "1.18.44"
+"mapstruct.version" = "1.6.3"
 "io.helidon.logging.provider" = "log4j"
 
-[[project.dependencyManagement.dependencies]]
-groupId = "io.helidon"
-artifactId = "helidon-dependencies"
-version = "${helidon.version}"
-type = "pom"
-scope = "import"
+# --- Dependencies ---
 
-[[project.dependencies]]
+[[dependencies]]
 groupId = "io.helidon.microprofile.bundles"
 artifactId = "helidon-microprofile"
+version = "${helidon.version}"
 
-[[project.dependencies]]
+[[dependencies]]
 groupId = "io.helidon.integrations.cdi"
 artifactId = "helidon-integrations-cdi-jta"
+version = "${helidon.version}"
 
-[[project.dependencies]]
+[[dependencies]]
 groupId = "io.helidon.logging"
 artifactId = "helidon-logging-log4j"
+version = "${helidon.version}"
 
-[[project.dependencies]]
+[[dependencies]]
+groupId = "io.helidon.microprofile.openapi"
+artifactId = "helidon-microprofile-openapi"
+version = "${helidon.version}"
+
+[[dependencies]]
+groupId = "org.eclipse"
+artifactId = "yasson"
+version = "3.0.4"
+
+[[dependencies]]
 groupId = "org.hibernate.orm"
 artifactId = "hibernate-core"
+version = "7.3.0.Final"
 
-[[project.dependencies]]
+[[dependencies]]
+groupId = "jakarta.inject"
+artifactId = "jakarta.inject-api"
+version = "2.0.1"
+
+[[dependencies]]
+groupId = "jakarta.persistence"
+artifactId = "jakarta.persistence-api"
+version = "3.2.0"
+
+[[dependencies]]
 groupId = "com.h2database"
 artifactId = "h2"
+version = "2.4.240"
 scope = "runtime"
 
-[[project.dependencies]]
+[[dependencies]]
 groupId = "org.projectlombok"
 artifactId = "lombok"
 version = "${lombok.version}"
+scope = "provided"
 
-[[project.dependencies]]
+[[dependencies]]
+groupId = "org.mapstruct"
+artifactId = "mapstruct"
+version = "${mapstruct.version}"
+scope = "compile"
+
+[[dependencies]]
+groupId = "org.projectlombok"
+artifactId = "lombok-mapstruct-binding"
+version = "0.2.0"
+scope = "provided"
+
+[[dependencies]]
 groupId = "org.apache.logging.log4j"
 artifactId = "log4j-slf4j2-impl"
+version = "2.25.3"
 
-[[project.dependencies]]
+[[dependencies]]
 groupId = "org.apache.logging.log4j"
 artifactId = "log4j-core"
+version = "2.25.3"
 
-[[project.dependencies]]
-groupId = "org.apache.logging.log4j"
-artifactId = "log4j-jcl"
-
-[[project.dependencies]]
+[[dependencies]]
 groupId = "org.junit.jupiter"
 artifactId = "junit-jupiter"
+version = "6.0.3"
 scope = "test"
 
-[[project.build.plugins]]
-groupId = "io.helidon.build-tools"
-artifactId = "helidon-maven-plugin"
-version = "4.0.0"
-extensions = true
+# --- Build & Plugins ---
 
-[[project.build.plugins]]
-artifactId = "maven-antrun-plugin"
-version = "3.2.0"
+[[build.plugins]]
+groupId = "org.apache.maven.plugins"
+artifactId = "maven-compiler-plugin"
+version = "3.15.0"
+[build.plugins.configuration]
+release = "${maven.compiler.release}"
+[[build.plugins.configuration.annotationProcessorPaths]]
+groupId = "org.projectlombok"
+artifactId = "lombok"
+version = "${lombok.version}"
+[[build.plugins.configuration.annotationProcessorPaths]]
+groupId = "org.mapstruct"
+artifactId = "mapstruct-processor"
+version = "${mapstruct.version}"
 
-  [[project.build.plugins.executions]]
-  id = "copy-db-folder"
-  phase = "process-resources"
-  goals = ["run"]
-  [project.build.plugins.executions.configuration.target]
-  copy = { todir = "${project.build.directory}/db", overwrite = true, fileset = { dir = "${project.basedir}/db" } }
+[[build.plugins]]
+groupId = "org.apache.maven.plugins"
+artifactId = "maven-dependency-plugin"
+version = "3.10.0"
+[[build.plugins.executions]]
+id = "copy-dependencies"
+phase = "package"
+goals = ["copy-dependencies"]
+[build.plugins.executions.configuration]
+outputDirectory = "${project.build.directory}/libs"
+includeScope = "runtime"
 
-[[project.profiles]]
+[[build.plugins]]
+groupId = "org.apache.maven.plugins"
+artifactId = "maven-jar-plugin"
+version = "3.5.0"
+[build.plugins.configuration.archive.manifest]
+mainClass = "BookApplication"
+addClasspath = true
+classpathPrefix = "libs/"
+
+# --- Profiles ---
+
+[[profiles]]
 id = "dev"
-[project.profiles.activation.property]
+[profiles.activation.property]
 name = "mp.config.profile"
 value = "dev"
+
+[[profiles.build.plugins]]
+artifactId = "maven-antrun-plugin"
+version = "3.2.0"
+[[profiles.build.plugins.executions]]
+id = "copy-db-folder"
+phase = "process-resources"
+goals = ["run"]
+[profiles.build.plugins.executions.configuration.target]
+"copy" = { todir = "${project.build.directory}/db", overwrite = "true", fileset = { dir = "${project.basedir}/db" } }
