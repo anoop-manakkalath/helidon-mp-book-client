@@ -31,7 +31,7 @@ public class BookResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response searchBooks(@QueryParam("title") String title, @QueryParam("author") String author) {
     	var bookEntities = repository.findByTitleAndAuthor(title, author);
-        var books = bookEntities.stream().map(mapper::toDto).toList();
+      var books = bookEntities.stream().map(mapper::toDto).toList();
     	log.info("Fetched {} books for search criteria.", books.size());
     	return Response.ok(books).build();
     }
