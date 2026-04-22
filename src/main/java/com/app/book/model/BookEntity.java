@@ -3,6 +3,7 @@
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,12 +11,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode
 @Entity
 @Table(name = "tbl_book")
 @NamedQueries({
 	@NamedQuery(name = "Book.findAll", query = "SELECT b FROM BookEntity b"),
-	@NamedQuery(name = "Book.findByTitle", query = "SELECT b FROM BookEntity b WHERE LOWER(b.title) LIKE LOWER(CONCAT('%', :title, '%'))"),
-	@NamedQuery(name = "Book.findByAuthor", query = "SELECT b FROM BookEntity b WHERE LOWER(b.author) LIKE LOWER(CONCAT('%', :author, '%'))")
+	@NamedQuery(name = "Book.findByTitleAndAuthor", query = "SELECT b FROM BookEntity b "
+			+ "WHERE (:title IS NULL OR :title = '' OR LOWER(b.title) LIKE LOWER(CONCAT('%', :title, '%'))) "
+			+ "AND (:author IS NULL OR :author = '' OR LOWER(b.author) LIKE LOWER(CONCAT('%', :author, '%')))")
 })
 public class BookEntity {
 

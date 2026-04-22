@@ -1,7 +1,5 @@
 package com.app.book.resource;
 
-import java.util.Objects;
-
 import com.app.book.dto.Book;
 import com.app.book.mapper.BookMapper;
 import com.app.book.model.BookEntity;
@@ -32,13 +30,7 @@ public class BookResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response searchBooks(@QueryParam("title") String title, @QueryParam("author") String author) {
-    	record SearchCriteria(String author, String title) {}
-        var criteria = new SearchCriteria(author, title);
-        var bookEntities = switch (criteria) {
-        	case SearchCriteria c when Objects.nonNull(criteria.title()) -> repository.findByTitle(c.title());
-            case SearchCriteria c when Objects.nonNull(criteria.author()) -> repository.findByAuthor(c.author());
-            default -> repository.findAll();
-        };
+    	var bookEntities = repository.findByTitleAndAuthor(title, author);
         var books = bookEntities.stream().map(mapper::toDto).toList();
     	log.info("Fetched {} books for search criteria.", books.size());
     	return Response.ok(books).build();

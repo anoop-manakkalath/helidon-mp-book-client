@@ -26,14 +26,9 @@ public class BookRepository {
         return Optional.ofNullable(em.find(BookEntity.class, id));
     }
 
-    public List<BookEntity> findByTitle(String title) {
-        return em.createNamedQuery("Book.findByTitle", BookEntity.class)
-                .setParameter("title", title).getResultList();
-    }
-
-    public List<BookEntity> findByAuthor(String author) {
-        return em.createNamedQuery("Book.findByAuthor", BookEntity.class)
-                .setParameter("author", author).getResultList();
+	public List<BookEntity> findByTitleAndAuthor(String title, String author) {
+    	return em.createNamedQuery("Book.findByTitleAndAuthor", BookEntity.class)
+    			.setParameter("title", title).setParameter("author", author).getResultList();
     }
 
     public BookEntity insert(BookEntity book) {
