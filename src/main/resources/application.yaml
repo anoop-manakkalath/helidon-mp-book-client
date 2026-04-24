@@ -1,2 +1,25 @@
 server:
   port: 8080
+
+openapi:
+  # Enables the automatic scanning of JAX-RS resources
+  scan:
+    disable: false
+    packages: "com.app.book.resource"
+  
+  # Configuration for the UI integration
+  ui:
+    enabled: true
+    web-context: "/openapi/ui"
+    # Points the UI to the raw definition source
+    openapi-dot-yml-url: "/openapi"
+
+# Global API Metadata
+mp:
+  openapi:
+    extensions:
+      liberty:
+        merged:
+          info:
+            title: "Book Management API"
+            description: "Helidon MP service for book search and management"
