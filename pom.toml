@@ -1,15 +1,16 @@
 [project]
-modelVersion = "4.0.0"
 groupId = "com.example"
 artifactId = "helidon-mp-book-client"
-version = "1.4.0"
+version = "1.5.0"
 
 [properties]
 maven.compiler.release = "25"
-helidon.version = "4.4.0"
+helidon.version = "4.4.1"
 lombok.version = "1.18.44"
 mapstruct.version = "1.6.3"
 io.helidon.logging.provider = "log4j"
+
+[dependencies]
 
 [[dependencies]]
 groupId = "io.helidon.microprofile.bundles"
@@ -19,6 +20,16 @@ version = "${helidon.version}"
 [[dependencies]]
 groupId = "io.helidon.integrations.cdi"
 artifactId = "helidon-integrations-cdi-jta"
+version = "${helidon.version}"
+
+[[dependencies]]
+groupId = "io.helidon.microprofile.jwt"
+artifactId = "helidon-microprofile-jwt-auth"
+version = "${helidon.version}"
+
+[[dependencies]]
+groupId = "io.helidon.microprofile"
+artifactId = "helidon-microprofile-security"
 version = "${helidon.version}"
 
 [[dependencies]]
@@ -46,6 +57,11 @@ version = "3.0.4"
 groupId = "org.hibernate.orm"
 artifactId = "hibernate-core"
 version = "7.3.0.Final"
+
+[[dependencies]]
+groupId = "com.nimbusds"
+artifactId = "nimbus-jose-jwt"
+version = "9.37.3"
 
 [[dependencies]]
 groupId = "org.eclipse.microprofile.openapi"
@@ -100,6 +116,11 @@ version = "2.25.3"
 
 [[dependencies]]
 groupId = "org.apache.logging.log4j"
+artifactId = "log4j-jul"
+version = "2.25.3"
+
+[[dependencies]]
+groupId = "org.apache.logging.log4j"
 artifactId = "log4j-core"
 version = "2.25.3"
 
@@ -117,57 +138,46 @@ scope = "test"
 
 [build]
 
-[[build.plugins]]
+[[plugins]]
 groupId = "org.apache.maven.plugins"
 artifactId = "maven-compiler-plugin"
 version = "3.15.0"
-[build.plugins.configuration]
+[plugins.configuration]
 release = "${maven.compiler.release}"
+annotationProcessorPaths = [
+  { groupId = "org.projectlombok", artifactId = "lombok", version = "${lombok.version}" },
+  { groupId = "org.mapstruct", artifactId = "mapstruct-processor", version = "${mapstruct.version}" }
+]
 
-[[build.plugins.configuration.annotationProcessorPaths]]
-groupId = "org.projectlombok"
-artifactId = "lombok"
-version = "${lombok.version}"
-
-[[build.plugins.configuration.annotationProcessorPaths]]
-groupId = "org.mapstruct"
-artifactId = "mapstruct-processor"
-version = "${mapstruct.version}"
-
-[[build.plugins]]
+[[plugins]]
 groupId = "io.smallrye"
 artifactId = "jandex-maven-plugin"
 version = "3.5.3"
+executions = [
+  { id = "make-index", goals = ["jandex"] }
+]
 
-[[build.plugins.executions]]
-id = "make-index"
-goals = ["jandex"]
-
-[[build.plugins]]
+[[plugins]]
 groupId = "org.apache.maven.plugins"
 artifactId = "maven-dependency-plugin"
 version = "3.10.0"
+executions = [
+  { id = "copy-dependencies", phase = "package", goals = ["copy-dependencies"], configuration = { outputDirectory = "${project.build.directory}/libs", includeScope = "runtime" } }
+]
 
-[[build.plugins.executions]]
-id = "copy-dependencies"
-phase = "package"
-goals = ["copy-dependencies"]
-[build.plugins.executions.configuration]
-outputDirectory = "${project.build.directory}/libs"
-includeScope = "runtime"
-
-[[build.plugins]]
+[[plugins]]
 groupId = "org.apache.maven.plugins"
 artifactId = "maven-jar-plugin"
 version = "3.5.0"
-[build.plugins.configuration.archive.manifest]
+[plugins.configuration.archive.manifest]
 mainClass = "BookApplication"
 addClasspath = true
 classpathPrefix = "libs/"
 
+[profiles]
+
 [[profiles]]
 id = "dev"
-
 [profiles.activation.property]
 name = "mp.config.profile"
 value = "dev"
@@ -175,13 +185,6 @@ value = "dev"
 [[profiles.build.plugins]]
 artifactId = "maven-antrun-plugin"
 version = "3.2.0"
-
-[[profiles.build.plugins.executions]]
-id = "copy-db-folder"
-phase = "process-resources"
-goals = ["run"]
-
-[profiles.build.plugins.executions.configuration.target.copy]
-todir = "${project.build.directory}/db"
-overwrite = true
-fileset.dir = "${project.basedir}/db"
+executions = [
+  { id = "copy-db-folder", phase = "process-resources", goals = ["run"], configuration = { target = { copy = { todir = "${project.build.directory}/db", overwrite = true, fileset = { dir = "${project.basedir}/db" } } } } }
+]

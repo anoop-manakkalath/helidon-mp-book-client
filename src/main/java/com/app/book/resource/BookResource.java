@@ -1,6 +1,7 @@
 package com.app.book.resource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.microprofile.auth.LoginConfig;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
@@ -12,6 +13,9 @@ import com.app.book.mapper.BookMapper;
 import com.app.book.model.BookEntity;
 import com.app.book.repository.BookRepository;
 
+import io.helidon.security.abac.role.RoleValidator.PermitAll;
+import jakarta.annotation.security.DeclareRoles;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -22,6 +26,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @ApplicationScoped
 @Path("/books")
+@LoginConfig(authMethod = "MP-JWT")
+@DeclareRoles({"admin", "user"})
 @Slf4j
 public class BookResource {
 
@@ -36,6 +42,7 @@ public class BookResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @PermitAll
     @Operation(
         summary = "Search books by criteria",
         description = "Filters the library collection based on title and author strings."
@@ -68,6 +75,7 @@ public class BookResource {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+    @PermitAll
     @Operation(
         summary = "Get book by ID",
         description = "Retrieves a single book record from the library database using its unique identifier."
@@ -101,6 +109,7 @@ public class BookResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"admin"})
     @Transactional
     @Operation(
         summary = "Create a new book",
@@ -135,6 +144,7 @@ public class BookResource {
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"admin"})
     @Transactional
     @Operation(
         summary = "Update an existing book",
@@ -178,6 +188,7 @@ public class BookResource {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"admin"})
     @Transactional
     @Operation(
         summary = "Delete a book",
