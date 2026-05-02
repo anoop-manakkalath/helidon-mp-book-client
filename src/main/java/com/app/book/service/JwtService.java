@@ -4,9 +4,10 @@ import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Base64;
+import java.util.Date;
 import java.util.Objects;
 
 import com.app.book.dto.User;
@@ -25,18 +26,16 @@ public class JwtService {
     private final RSAPrivateKey privateKey = loadPrivateKey();
 
     public String generateToken(User user) throws Exception {
-    	var now = LocalDateTime.now(ZoneOffset.UTC);
-    	var expiry = now.plusHours(1);
-    	long currSeconds = now.atZone(ZoneOffset.UTC).toEpochSecond();
-    	long expSeconds = expiry.atZone(ZoneOffset.UTC).toEpochSecond();
+    	var now = Instant.now(); 
+    	var expiry = now.plus(1, ChronoUnit.HOURS);
         var signer = new RSASSASigner(privateKey);
         var claimsSet = new JWTClaimsSet.Builder()
             .issuer("https://authbook.dev")
             .subject(user.username())
             .claim("upn", user.username())
             .claim("groups", user.roles())
-            .claim("iat", currSeconds) 
-            .claim("exp", expSeconds)
+            .issueTime(Date.from(now))      
+            .expirationTime(Date.from(expiry))
             .build();
         var signedJWT = new SignedJWT(
             new JWSHeader.Builder(JWSAlgorithm.RS256).keyID("kid-1").build(),
