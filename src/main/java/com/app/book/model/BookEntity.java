@@ -14,12 +14,10 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 @Entity
 @Table(name = "tbl_book")
-@NamedQueries({
-	@NamedQuery(name = "Book.findAll", query = "SELECT b FROM BookEntity b"),
-	@NamedQuery(name = "Book.findByTitleAndAuthor", query = "SELECT b FROM BookEntity b "
-			+ "WHERE (:title IS NULL OR :title = '' OR LOWER(b.title) LIKE LOWER(CONCAT('%', :title, '%'))) "
-			+ "AND (:author IS NULL OR :author = '' OR LOWER(b.author) LIKE LOWER(CONCAT('%', :author, '%')))")
-})
+@NamedQuery(name = "Book.findAll", query = "SELECT b FROM BookEntity b")
+@NamedQuery(name = "Book.findByTitleAndAuthor", query = "SELECT b FROM BookEntity b "
+		+ "WHERE (:title IS NULL OR :title = '' OR LOWER(b.title) LIKE LOWER(CONCAT('%', :title, '%'))) "
+		+ "AND (:author IS NULL OR :author = '' OR LOWER(b.author) LIKE LOWER(CONCAT('%', :author, '%')))")
 public class BookEntity {
 
     @Id
