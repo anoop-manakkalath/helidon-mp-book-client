@@ -20,11 +20,13 @@ import jakarta.ws.rs.core.Response;
 public class AuthResource {
 	
     private final JwtService jwtService;
+    
+    private static final String ADMIN = "admin";
 
     // Mock Database
     private final Map<String, User> userDb = Map.of(
-        "admin", new User("admin", "pass123", List.of("admin")),
-        "guest", new User("guest", "pass456", List.of("user"))
+    		ADMIN, new User(ADMIN, "pass123", List.of(ADMIN)),
+    		"guest", new User("guest", "pass456", List.of("user"))
     );
     
     @Inject
@@ -37,7 +39,7 @@ public class AuthResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @PermitAll
-    public Response login(LoginRequest request) throws Exception {
+    public Response login(LoginRequest request) {
         var user = userDb.get(request.username());
         if (Optional.ofNullable(user).map(User::password).filter(pass -> pass.equals(request.password()))
                 .isPresent()) {

@@ -68,7 +68,7 @@ public class BookResource {
     public Response searchBooks(@QueryParam("title") String title, @QueryParam("author") String author) {
     	var bookEntities = repository.findByTitleAndAuthor(title, author);
     	var books = bookEntities.stream().map(mapper::toDto).toList();
-    	log.info("Fetched {} books for search criteria.", books.size());
+    	log.atInfo().log("Fetched {} books for search criteria.", books.size());
     	return Response.ok(books).build();
     }
     
@@ -98,7 +98,7 @@ public class BookResource {
     	return repository.findById(id)
                 .map(mapper::toDto)
                 .map(book -> {
-                		log.info("The book with id '{}' fetched.", id);
+                		log.atInfo().log("The book with id '{}' fetched.", id);
                     return Response.ok(book).build();
                 })
                 .orElseGet(() -> Response.status(Response.Status.NOT_FOUND)
@@ -136,7 +136,7 @@ public class BookResource {
     	var bookEntity = mapper.toEntity(book);
         var savedBookEntity = repository.insert(bookEntity);
         var savedBook = mapper.toDto(savedBookEntity);
-        log.info("The book '{}' saved.", savedBook.getTitle());
+        log.atInfo().log("The book '{}' saved.", savedBook.getTitle());
         return Response.status(Response.Status.CREATED).entity(savedBook).build();
     }
 
@@ -177,7 +177,7 @@ public class BookResource {
             		var updatedBookEntity = BookEntity.builder().id(id).title(book.getTitle()).author(book.getAuthor()).build();
             		repository.merge(updatedBookEntity);
             		var updatedBook = mapper.toDto(updatedBookEntity);
-                log.info("The book '{}' updated.", updatedBook.getTitle());
+            		log.atInfo().log("The book '{}' updated.", updatedBook.getTitle());
                 return Response.ok(updatedBook).build();
             })
             .orElseGet(() -> Response.status(Response.Status.NOT_FOUND)
@@ -212,7 +212,7 @@ public class BookResource {
         return repository.findById(id)
             .map(book -> {
                 repository.delete(book);
-                log.info("The book '{}' deleted.", book.getTitle());
+                log.atInfo().log("The book '{}' deleted.", book.getTitle());
                 return Response.noContent().build();
             })
             .orElseGet(() -> Response.status(Response.Status.NOT_FOUND)
